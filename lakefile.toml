@@ -1,0 +1,10 @@
+name = "Leftpad"
+version = "0.1.0"
+defaultTargets = ["leftpad"]
+
+[[lean_lib]]
+name = "Leftpad"
+
+[[lean_exe]]
+name = "leftpad"
+root = "Main"
