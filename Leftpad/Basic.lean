@@ -30,17 +30,33 @@ theorem Leftpad.leftpad_length {α : Type} (n : MyNat) (x : α) (xs : MyList α)
 theorem Leftpad.leftpad_suffix {α : Type} [MyEq α] (n : MyNat) (x : α) (xs : MyList α) : xs.is_suffix_of (Leftpad.leftpad n x xs) = MyBool.my_true := by
   match n with
   | MyNat.my_zero =>
-    rw [Leftpad.leftpad, MyNat.zero_sub, MyList.zero_replicate_is_nil, MyList.append_nil, MyList.list_is_suffix_of_itself]
+    rw [Leftpad.leftpad, MyNat.zero_sub, MyList.zero_replicate_is_nil, MyList.append_nil, MyList.is_suffix_of_itself]
   | MyNat.my_succ n =>
-    rw [Leftpad.leftpad, MyList.list_is_suffix_after_append]
+    rw [Leftpad.leftpad, MyList.is_suffix_after_appending]
 
 theorem Leftpad.leftpad_prefix {α : Type} [MyEq α] (n : MyNat) (x : α) (xs : MyList α) : (MyList.replicate (n.my_sub xs.my_length) x).is_prefix_of (Leftpad.leftpad n x xs) = MyBool.my_true := by
   match n with
   | MyNat.my_zero =>
     rw [Leftpad.leftpad, MyNat.zero_sub, MyList.zero_replicate_is_nil, MyList.append_nil, MyList.nil_is_prefix_of_any]
   | MyNat.my_succ n =>
-    rw [Leftpad.leftpad, MyList.is_prefix_after_append]
+    rw [Leftpad.leftpad, MyList.is_prefix_after_prepending]
 
 end Leftpad.Leftpad
 
-def hello := "Mks"
+open Leftpad.Leftpad
+open Leftpad.MksBool
+open Leftpad.MksList
+open Leftpad.MksNat
+
+instance : MyEq Char where
+  my_eq x y :=
+    if x.val = y.val then MyBool.my_true else MyBool.my_false
+
+  my_eq_refl (x : Char) : (if x.val = x.val then MyBool.my_true else MyBool.my_false) = MyBool.my_true := by
+    simp
+
+def toString {α : Type} (toStr : α → String) : MyList α → String
+  | MyList.my_nil => ""
+  | MyList.my_cons x xs => toString toStr xs ++ toStr x
+
+def result := toString (fun c => String.mk [c]) (Leftpad.leftpad (MyNat.my_succ (MyNat.my_succ (MyNat.my_succ (MyNat.my_succ MyNat.my_zero)))) '!' (MyList.my_cons '2' (MyList.my_cons '1' MyList.my_nil)))
