@@ -17,29 +17,24 @@ open Leftpad.NatTheorems
 def Leftpad.leftpad {α : Type} (n : MyNat) (x : α) (xs : MyList α) : MyList α :=
   xs.my_append (MyList.replicate (n.my_sub xs.my_length) x)
 
+theorem Leftpad.leftpad_rep_def {α : Type} (n : MyNat) (x : α) (xs : MyList α) : Leftpad.leftpad n x xs = xs.my_append (MyList.replicate (n.my_sub xs.my_length) x) := by
+  rfl
+
 theorem Leftpad.leftpad_length {α : Type} (n : MyNat) (x : α) (xs : MyList α) : (Leftpad.leftpad n x xs).my_length = n.my_max xs.my_length := by
   match n with
   | MyNat.my_zero =>
-    rw [MyNat.zero_max, Leftpad.leftpad, MyNat.zero_sub, MyList.replicate, MyList.append_nil]
+    rw [MyNat.zero_max, Leftpad.leftpad_rep_def, MyNat.zero_sub, MyList.zero_rep_is_nil, MyList.append_nil]
   | MyNat.my_succ n =>
     match xs with
-    | MyList.my_nil => rw [Leftpad.leftpad, MyList.nil_length, MyNat.sub_zero, MyList.nil_append, MyList.replicate_length, MyNat.max_zero]
+    | MyList.my_nil => rw [Leftpad.leftpad_rep_def, MyList.nil_length, MyNat.sub_zero, MyList.nil_append, MyList.rep_length, MyNat.max_zero]
     | MyList.my_cons y ys =>
-      rw [Leftpad.leftpad, MyList.cons_length, MyNat.succ_sub_succ, MyList.append_length, MyList.cons_length, MyList.replicate_length, MyNat.succ_max_succ, MyNat.succ_add, MyNat.add_sub_eq_max, MyNat.max_comm]
-
-theorem Leftpad.leftpad_suffix {α : Type} [MyEq α] (n : MyNat) (x : α) (xs : MyList α) : xs.is_suffix_of (Leftpad.leftpad n x xs) = MyBool.my_true := by
-  match n with
-  | MyNat.my_zero =>
-    rw [Leftpad.leftpad, MyNat.zero_sub, MyList.zero_replicate_is_nil, MyList.append_nil, MyList.is_suffix_of_itself]
-  | MyNat.my_succ n =>
-    rw [Leftpad.leftpad, MyList.is_suffix_after_appending]
+      rw [Leftpad.leftpad_rep_def, MyList.cons_length, MyNat.succ_sub_succ, MyList.append_length, MyList.cons_length, MyList.rep_length, MyNat.succ_max_succ, MyNat.succ_add, MyNat.add_sub_eq_max, MyNat.max_comm]
 
 theorem Leftpad.leftpad_prefix {α : Type} [MyEq α] (n : MyNat) (x : α) (xs : MyList α) : (MyList.replicate (n.my_sub xs.my_length) x).is_prefix_of (Leftpad.leftpad n x xs) = MyBool.my_true := by
-  match n with
-  | MyNat.my_zero =>
-    rw [Leftpad.leftpad, MyNat.zero_sub, MyList.zero_replicate_is_nil, MyList.append_nil, MyList.nil_is_prefix_of_any]
-  | MyNat.my_succ n =>
-    rw [Leftpad.leftpad, MyList.is_prefix_after_prepending]
+  rw [Leftpad.leftpad_rep_def, MyList.prefix_prepend]
+
+theorem Leftpad.leftpad_suffix {α : Type} [MyEq α] (n : MyNat) (x : α) (xs : MyList α) : xs.is_suffix_of (Leftpad.leftpad n x xs) = MyBool.my_true := by
+  rw [Leftpad.leftpad_rep_def, MyList.suffix_append]
 
 end Leftpad.Leftpad
 
@@ -59,4 +54,4 @@ def toString {α : Type} (toStr : α → String) : MyList α → String
   | MyList.my_nil => ""
   | MyList.my_cons x xs => toString toStr xs ++ toStr x
 
-def result := toString (fun c => String.mk [c]) (Leftpad.leftpad (MyNat.my_succ (MyNat.my_succ (MyNat.my_succ (MyNat.my_succ MyNat.my_zero)))) '!' (MyList.my_cons '2' (MyList.my_cons '1' MyList.my_nil)))
+def result := toString (fun c => String.mk [c]) (Leftpad.leftpad (MyNat.my_succ (MyNat.my_succ (MyNat.my_succ (MyNat.my_succ (MyNat.my_succ MyNat.my_zero))))) '!' (MyList.my_cons 'o' (MyList.my_cons 'o' (MyList.my_cons 'f' MyList.my_nil))))
